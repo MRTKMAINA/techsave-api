@@ -1,4 +1,4 @@
-services:
+﻿services:
   - type: web
     name: techsave-api
     runtime: docker
@@ -11,3 +11,20 @@ services:
         value: https://techsave-techgpt.web.app
       - key: RATE_MAX
         value: "20"
+      - key: UPSTREAM_COBALT
+        value: https://techsave-cobalt.onrender.com/
+
+  - type: web
+    name: techsave-cobalt
+    runtime: image
+    image:
+      url: ghcr.io/imputnet/cobalt:11
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: API_URL
+        value: https://techsave-cobalt.onrender.com/
+      - key: API_PORT
+        value: "10000"
+      - key: PORT
+        value: "10000"
