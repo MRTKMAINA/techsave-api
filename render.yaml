@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: techsave-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/info
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: CORS_ORIGIN
+        value: https://techsave-techgpt.web.app
+      - key: RATE_MAX
+        value: "20"

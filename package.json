@@ -1,0 +1,9 @@
+{
+  "name": "techsave-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "engines": { "node": ">=22" },
+  "scripts": { "start": "node server.js" }
+}
