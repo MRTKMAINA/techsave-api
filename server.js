@@ -97,6 +97,7 @@ async function viaUpstream(body) {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json", ...(UPSTREAM_KEY ? { Authorization: `Api-Key ${UPSTREAM_KEY}` } : {}) },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(60_000),
   });
   return r.json();
 }
@@ -128,10 +129,12 @@ async function handleProcess(req, res, raw) {
   if (p.error) return send(res, 400, err(p.error));
   const o = p.value;
 
-  if (UPSTREAM) return send(res, 200, await viaUpstream(json).catch(() => err("error.api.fetch.critical")));
-
   const svc = services.find(s => s.match(o.url));
-  if (!svc) return send(res, 200, err("error.api.link.unsupported"));
+  if (!svc) {
+    // Not handled locally: hand it to the self-hosted cobalt instance, if one is configured.
+    if (UPSTREAM) return send(res, 200, await viaUpstream(json).catch(() => err("error.api.upstream.offline")));
+    return send(res, 200, err("error.api.link.unsupported"));
+  }
   let r;
   try { r = await svc.run(o.url, o); } catch { return send(res, 200, err("error.api.fetch.critical")); }
   if (r.error) return send(res, 200, err(r.error));
